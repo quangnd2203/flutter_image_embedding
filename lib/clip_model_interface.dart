@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 abstract class ClipModelInterface {
   Future<void> loadModel();
-  Future<List<double>> extractImageEmbedding(Uint8List imageBytes);
-  Future<List<double>> extractTextEmbedding(String text);
+  Future<List<List<double>>> extractImageEmbedding(List<Uint8List> images);
+  Future<List<List<double>>> extractTextEmbedding(List<String> texts);
   void dispose();
 }

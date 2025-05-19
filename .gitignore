@@ -46,3 +46,5 @@ app.*.map.json
 
 # Onnx model too large
 /assets/onnx/
+
+*.lock

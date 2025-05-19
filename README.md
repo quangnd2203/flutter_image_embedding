@@ -34,9 +34,9 @@ samples, guidance on mobile development, and a full API reference.
 - Flutter 3.3 or higher
 - Dart SDK 3.6.1 or higher
 - Download the ONNX models from [this Google Drive link](https://drive.google.com/drive/folders/1ZA0463DyGqe2dYy5pkI5X3SK0B8guwHA?usp=sharing) and place them in `assets/onnx/`:
-  - `clip.onnx`
-  - `clip_image_visual.onnx`
-  - `clip_text_transformer.onnx`
+  - `clip_model.onnx`
+  - `clip_model_transformer.onnx`
+  - `clip_model_visual.onnx`
 - Vocabulary file: `assets/tokenizer/vocab.txt`
 
 ### Usage
