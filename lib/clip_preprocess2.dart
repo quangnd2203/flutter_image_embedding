@@ -55,22 +55,6 @@ List<List<List<double>>> preprocessClipImage(Uint8List imageBytes, {int nPx = 22
 
   return normalized;
 }
-img.Image resizeWithAspect(img.Image image, int shortEdge) {
-  int origW = image.width;
-  int origH = image.height;
-
-  int newW, newH;
-  if (origW < origH) {
-    newW = shortEdge;
-    newH = (origH * shortEdge / origW).round();
-  } else {
-    newH = shortEdge;
-    newW = (origW * shortEdge / origH).round();
-  }
-
-  return img.copyResize(image, width: newW, height: newH, interpolation: img.Interpolation.cubic);
-}
-
 
 /// Normalize a 3D image tensor with shape [3][H][W].
 /// Formula: output[c][y][x] = (input[c][y][x] - mean[c]) / std[c]

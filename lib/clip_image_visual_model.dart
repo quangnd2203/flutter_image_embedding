@@ -1,9 +1,23 @@
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:onnxruntime/onnxruntime.dart';
 import 'package:flutter_image_embedding/clip_model_interface.dart';
 
 import 'clip_preprocess2.dart';
+
+// Top-level function to preprocess images for compute()
+Float32List preprocessImages(List<Uint8List> images) {
+  final List<List<List<List<double>>>> imageTensors =
+      images.map((img) => preprocessClipImage(img)).toList();
+
+  return Float32List.fromList(
+    imageTensors
+        .expand((c) => c.expand((h) => h))
+        .expand((w) => w)
+        .map((e) => e.toDouble())
+        .toList(),
+  );
+}
 
 class ClipImageVisualModel implements ClipModelInterface {
   OrtSession? _session;
@@ -26,16 +40,7 @@ class ClipImageVisualModel implements ClipModelInterface {
       throw Exception("Model not loaded. Call loadModel() first.");
     }
 
-    final List<List<List<List<double>>>> imageTensors =
-        images.map((img) => preprocessClipImage(img)).toList();
-
-    final Float32List flattened = Float32List.fromList(
-      imageTensors
-          .expand((c) => c.expand((h) => h))
-          .expand((w) => w)
-          .map((e) => e.toDouble())
-          .toList(),
-    );
+    final Float32List flattened = await compute(preprocessImages, images);
 
     final inputTensor = OrtValueTensor.createTensorWithDataList(
       flattened,

@@ -1,0 +1,23 @@
+// 🔥 This file is auto-generated. Do not edit by hand.
+const List<String> assetImages = [
+  'assets/images/360.webp',
+  'assets/images/blog_import_62c9fea3364db.jpg',
+  'assets/images/right_20190515_after.jpg',
+  'assets/images/8.jpg',
+  'assets/images/ls1_upperarm_after5.jpg',
+  'assets/images/rightside_20190515_before.jpg',
+  'assets/images/9.jpg',
+  'assets/images/300x300.webp',
+  'assets/images/images (1).jpeg',
+  'assets/images/aHwXGEIxW31V.jpg',
+  'assets/images/10.jpg',
+  'assets/images/rightside_20190515_after.jpg',
+  'assets/images/603718b1ff24c56f7bc904e0649f3776.jpg',
+  'assets/images/5.jpg',
+  'assets/images/7.jpg',
+  'assets/images/10-scaled.jpg',
+  'assets/images/6.jpg',
+  'assets/images/2.jpg',
+  'assets/images/3.jpg',
+  'assets/images/1.jpg',
+];
