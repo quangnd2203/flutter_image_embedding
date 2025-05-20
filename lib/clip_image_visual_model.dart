@@ -40,7 +40,7 @@ class ClipImageVisualModel implements ClipModelInterface {
       throw Exception("Model not loaded. Call loadModel() first.");
     }
 
-    final Float32List flattened = await compute(preprocessImages, images);
+    Float32List flattened = await compute(preprocessImages, images);
 
     final inputTensor = OrtValueTensor.createTensorWithDataList(
       flattened,
@@ -58,6 +58,11 @@ class ClipImageVisualModel implements ClipModelInterface {
     }
     final OrtValue result = outputs.first!;
     final List<List<double>> data = (result.value as List<List<double>>);
+
+    for (var element in outputs) {
+      element?.release();
+    }
+    flattened = Float32List(0);
     return data;
   }
 

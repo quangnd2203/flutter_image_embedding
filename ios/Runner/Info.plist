@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Chúng tôi cần truy cập thư viện ảnh của bạn để hiển thị và tìm kiếm hình ảnh.</string>
 </dict>
 </plist>

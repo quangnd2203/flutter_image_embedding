@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
-import '../assets_list.dart';
+import 'dart:io';
 
 class ImageList extends StatelessWidget {
+  final List<String> images;
   final bool Function(String)? filter;
   final Comparator<String>? sort;
 
-  const ImageList({super.key, this.filter, this.sort});
+  const ImageList({
+    super.key,
+    required this.images,
+    this.filter,
+    this.sort,
+  });
 
   @override
   Widget build(BuildContext context) {
     List<String> filteredImages = filter == null
-        ? List.from(assetImages)
-        : assetImages.where(filter!).toList();
+        ? List.from(images)
+        : images.where(filter!).toList();
 
     if (sort != null) {
       filteredImages.sort(sort);
@@ -26,9 +32,11 @@ class ImageList extends StatelessWidget {
         mainAxisSpacing: 12,
       ),
       itemBuilder: (context, index) {
-        return Image.asset(
-          filteredImages[index],
+        return Image.file(
+          File(filteredImages[index]),
           fit: BoxFit.cover,
+          gaplessPlayback: true,
+          cacheWidth: 300, // giảm kích thước cache nếu cần
         );
       },
     );
