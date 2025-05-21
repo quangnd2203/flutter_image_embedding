@@ -126,7 +126,6 @@ class _MyHomePageState extends State<MyHomePage> {
         processImagesController.add(progressPercent);
       }
       preProcessImages.clear();
-      box = null;
     }
     box = null;
     setState(() {
