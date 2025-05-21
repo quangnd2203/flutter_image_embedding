@@ -49,6 +49,16 @@ samples, guidance on mobile development, and a full API reference.
 
 This package includes a CLIP-compatible BPE tokenizer written in Dart. It uses `vocab.txt` and applies BPE merging to match CLIP's tokenization.
 
+## First Run Project
+
+To generate necessary code and ensure the project builds correctly, run:
+
+```bash
+flutter pub get
+flutter pub run build_runner clean
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+
 ## License
 
 This project uses open models and is provided under the MIT License.
