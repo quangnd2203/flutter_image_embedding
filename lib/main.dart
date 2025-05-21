@@ -58,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final StreamController<int> processImagesController = StreamController<int>.broadcast();
 
-  final Box<VectorImage> box = Hive.box<VectorImage>(HiveAdapters.vectorImageBox);
+  Box<VectorImage>? box;
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -90,6 +90,10 @@ class _MyHomePageState extends State<MyHomePage> {
     _selectedImage = null;
     _selectedVector = null;
 
+    box = Hive.box<VectorImage>(HiveAdapters.vectorImageBox);
+    box!.clear();
+    vectorImages = {};
+
     final List<AssetEntity> assets = await PhotoManager.getAssetListRange(
       start: 0,
       end: 100,
@@ -116,12 +120,13 @@ class _MyHomePageState extends State<MyHomePage> {
           vector: vectors[j],
         );
         vectorImages[path] = vectorImage;
-        box.put(path, vectorImage);
+        box?.put(path, vectorImage);
         final currentIndex = i + j + 1;
         final progressPercent = (currentIndex / assets.length * 100).clamp(0, 100).round();
         processImagesController.add(progressPercent);
       }
       preProcessImages.clear();
+      box = null;
     }
 
     setState(() {
@@ -132,7 +137,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     model.loadModel();
-    vectorImages = box.toMap().cast<String, VectorImage>();
+    box = Hive.box<VectorImage>(HiveAdapters.vectorImageBox);
+    vectorImages = box!.toMap().cast<String, VectorImage>();
+    box = null;
     super.initState();
   }
 
