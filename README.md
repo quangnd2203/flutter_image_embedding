@@ -1,5 +1,9 @@
 # flutter_image_embedding
 
+<p align="center">
+  <img src="assets/gif/demo.gif" width="600" alt="App demo"/>
+</p>
+
 A new Flutter project.
 
 ## Getting Started
