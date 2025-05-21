@@ -52,11 +52,13 @@ class _MyHomePageState extends State<MyHomePage> {
   List<double>? _selectedVector;
   bool _isLoading = false;
 
-  final Map<String, VectorImage> vectorImages = {};
+  Map<String, VectorImage> vectorImages = {};
 
   ClipModelInterface model = ClipImageVisualModel();
 
   final StreamController<int> processImagesController = StreamController<int>.broadcast();
+
+  final Box<VectorImage> box = Hive.box<VectorImage>(HiveAdapters.vectorImageBox);
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -88,11 +90,11 @@ class _MyHomePageState extends State<MyHomePage> {
     _selectedImage = null;
     _selectedVector = null;
 
-    final List<AssetPathEntity> paths = await PhotoManager.getAssetPathList(
-      onlyAll: true,
+    final List<AssetEntity> assets = await PhotoManager.getAssetListRange(
+      start: 0,
+      end: 100,
       type: RequestType.image,
     );
-    final List<AssetEntity> assets = await paths.first.getAssetListRange(start: 0, end: 100);
 
     const batchSize = 5;
     for (int i = 0; i < assets.length; i += batchSize) {
@@ -108,11 +110,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
       for (int j = 0; j < batch.length; j++) {
         final file = batch[j];
+        final path = (await file.originFile)!.path;
         final vectorImage = VectorImage(
-          imageName: (await file.originFile)!.path,
+          imageName: path,
           vector: vectors[j],
         );
-        vectorImages[(await file.originFile)!.path] = vectorImage;
+        vectorImages[path] = vectorImage;
+        box.put(path, vectorImage);
         final currentIndex = i + j + 1;
         final progressPercent = (currentIndex / assets.length * 100).clamp(0, 100).round();
         processImagesController.add(progressPercent);
@@ -128,6 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     model.loadModel();
+    vectorImages = box.toMap().cast<String, VectorImage>();
     super.initState();
   }
 
