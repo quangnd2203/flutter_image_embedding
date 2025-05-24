@@ -25,45 +25,55 @@ class ClipImageVisualModel implements ClipModelInterface {
 
   @override
   Future<void> loadModel() async {
-    if (_isInitialized) return;
-    final sessionOptions = OrtSessionOptions();
-    const assetFileName = 'assets/onnx/clip_model_visual.onnx';
-    final rawAssetFile = await rootBundle.load(assetFileName);
-    final bytes = rawAssetFile.buffer.asUint8List();
-    _session = OrtSession.fromBuffer(bytes, sessionOptions);
-    _isInitialized = true;
+    try{
+      if (_isInitialized) return;
+      final sessionOptions = OrtSessionOptions();
+      const assetFileName = 'assets/onnx/clip_model_visual.onnx';
+      final rawAssetFile = await rootBundle.load(assetFileName);
+      final bytes = rawAssetFile.buffer.asUint8List();
+      _session = OrtSession.fromBuffer(bytes, sessionOptions);
+      _isInitialized = true;
+    }catch(e){
+      print("Error loading model: $e");
+      throw Exception("Failed to load model: $e");
+    }
   }
 
   @override
   Future<List<List<double>>> extractImageEmbedding(List<Uint8List> images) async {
-    if (!_isInitialized) {
-      throw Exception("Model not loaded. Call loadModel() first.");
-    }
+    try{
+      if (!_isInitialized) {
+        throw Exception("Model not loaded. Call loadModel() first.");
+      }
 
-    Float32List flattened = await compute(preprocessImages, images);
+      Float32List flattened = await compute(preprocessImages, images);
 
-    final inputTensor = OrtValueTensor.createTensorWithDataList(
-      flattened,
-      [images.length, 3, 224, 224],
-    );
-    final runOptions = OrtRunOptions();
+      final inputTensor = OrtValueTensor.createTensorWithDataList(
+        flattened,
+        [images.length, 3, 224, 224],
+      );
+      final runOptions = OrtRunOptions();
 
-    final outputs = await _session?.runAsync(runOptions, {'IMAGE': inputTensor});
-    // Release tensor resources to free memory
-    inputTensor.release();
-    runOptions.release();
+      final outputs = await _session?.runAsync(runOptions, {'IMAGE': inputTensor});
+      // Release tensor resources to free memory
+      inputTensor.release();
+      runOptions.release();
 
-    if (outputs == null || outputs.isEmpty || outputs.first == null) {
+      if (outputs == null || outputs.isEmpty || outputs.first == null) {
+        return [];
+      }
+      final OrtValue result = outputs.first!;
+      final List<List<double>> data = (result.value as List<List<double>>);
+
+      for (var element in outputs) {
+        element?.release();
+      }
+      flattened = Float32List(0);
+      return data;
+    }catch (e) {
+      print("Error extracting image embedding: $e");
       return [];
     }
-    final OrtValue result = outputs.first!;
-    final List<List<double>> data = (result.value as List<List<double>>);
-
-    for (var element in outputs) {
-      element?.release();
-    }
-    flattened = Float32List(0);
-    return data;
   }
 
   @override
