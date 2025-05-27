@@ -49,7 +49,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  File? _selectedImage;
+  Uint8List? _selectedImage;
   List<double>? _selectedVector;
   bool _isLoading = false;
 
@@ -66,10 +66,10 @@ class _MyHomePageState extends State<MyHomePage> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       final imageFile = File(pickedFile.path);
-      final jpgBytes = await convertImageFileToJpgBytes(imageFile);
+      final jpgBytes = await compute(convertImageFileToJpgBytes, (imageFile, true));
       final vector = await model.extractImageEmbedding([jpgBytes]);
       setState(() {
-        _selectedImage = imageFile;
+        _selectedImage = jpgBytes;
         _selectedVector = vector[0];
       });
     }
@@ -108,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final preProcessImages = await Future.wait(
         batch.map((file) async {
           final originalFile = await file.file;
-          final jpgBytes = await compute(convertImageFileToJpgBytes, originalFile!);
+          final jpgBytes = await compute(convertImageFileToJpgBytes, (originalFile!, false));
           return jpgBytes;
         }),
       );
@@ -159,7 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
               if (_selectedImage != null)
                 Row(
                   children: [
-                    Expanded(child: Image.file(_selectedImage!, height: 200)),
+                    Expanded(child: Image.memory(_selectedImage!, height: 200)),
                     Container(
                       margin: const EdgeInsets.only(right: 8),
                       decoration: BoxDecoration(

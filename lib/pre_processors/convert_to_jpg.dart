@@ -3,16 +3,17 @@ import 'dart:typed_data';
 import 'package:image/image.dart' as img;
 
 /// Converts an image file (any format) to JPEG bytes.
-Future<Uint8List> convertImageFileToJpgBytes(File file) async {
-  final extension = file.path.toLowerCase().split('.').last;
-  if (extension != 'png') {
-    return file.readAsBytes();
+Future<Uint8List> convertImageFileToJpgBytes((File file, bool? isPickerImage) params) async {
+  final extension = params.$1.path.toLowerCase().split('.').last;
+  final isPickerImage = params.$2 ?? false;
+  if (extension != 'png' && !isPickerImage) {
+    return params.$1.readAsBytes();
   }
 
-  final bytes = await file.readAsBytes();
+  final bytes = await params.$1.readAsBytes();
   final image = img.decodeImage(bytes);
   if (image == null) {
-    return bytes;
+    throw Exception("Cannot decode image data from file: ${params.$1.path}");
   }
 
   final jpgBytes = Uint8List.fromList(img.encodeJpg(image));
