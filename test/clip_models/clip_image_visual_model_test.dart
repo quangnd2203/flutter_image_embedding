@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_image_embedding/clip_image_visual_model.dart';
+import 'package:flutter_image_embedding/clip_models/clip_image_visual_model.dart';
+import 'package:flutter_image_embedding/clip_models/clip_model_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_image_embedding/clip_model_interface.dart';
 
 
 void main() async {

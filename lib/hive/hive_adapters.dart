@@ -1,4 +1,4 @@
-import 'package:flutter_image_embedding/vector_image.dart';
+import 'package:flutter_image_embedding/entity/vector_image.dart';
 import 'package:hive_ce/hive.dart';
 
 

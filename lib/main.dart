@@ -1,19 +1,20 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_image_embedding/clip_model_interface.dart';
 import 'package:flutter_image_embedding/hive/hive_adapters.dart';
 import 'package:flutter_image_embedding/hive/hive_registrar.g.dart';
-import 'package:flutter_image_embedding/vector_image.dart';
+import 'package:flutter_image_embedding/entity/vector_image.dart';
+import 'package:flutter_image_embedding/pre_processors/convert_to_jpg.dart';
+import 'package:flutter_image_embedding/pre_processors/cosine_similarity.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_embedding/widget/image_list.dart';
 import 'package:photo_manager/photo_manager.dart';
 
-import 'assets_list.dart';
-import 'clip_image_visual_model.dart';
-import 'cosine_similarity.dart';
+import 'clip_models/clip_image_visual_model.dart';
+import 'clip_models/clip_model_interface.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -65,8 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       final imageFile = File(pickedFile.path);
-      final bytes = await imageFile.readAsBytes();
-      final vector = await model.extractImageEmbedding([bytes]);
+      final jpgBytes = await convertImageFileToJpgBytes(imageFile);
+      final vector = await model.extractImageEmbedding([jpgBytes]);
       setState(() {
         _selectedImage = imageFile;
         _selectedVector = vector[0];
@@ -106,8 +107,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
       final preProcessImages = await Future.wait(
         batch.map((file) async {
-          final bytes = await (await file.file)!.readAsBytes();
-          return bytes;
+          final originalFile = await file.file;
+          final jpgBytes = await compute(convertImageFileToJpgBytes, originalFile!);
+          return jpgBytes;
         }),
       );
       final vectors = await model.extractImageEmbedding(preProcessImages);
@@ -192,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       vector,
                     );
 
-                    return distance < 0.5;
+                    return distance > 0.5;
                   },
                   sort: _selectedVector == null
                       ? null
@@ -201,7 +203,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           final vb = vectorImages[b]!.vector;
                           final sa = cosineSimilarity(_selectedVector!, va);
                           final sb = cosineSimilarity(_selectedVector!, vb);
-                          return sa.compareTo(sb); // Higher similarity = comes first
+                          return sb.compareTo(sa); // Higher similarity = comes first
                         },
                 ),
               ),

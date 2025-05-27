@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_image_embedding/clip_preprocess.dart';
-import 'package:flutter_image_embedding/clip_preprocess2.dart';
+import 'package:flutter_image_embedding/pre_processors/clip_preprocess.dart';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_image_embedding/clip_tokenizer.dart';
+import 'package:flutter_image_embedding/pre_processors/clip_tokenizer.dart';
 
 void main() async {
   TestWidgetsFlutterBinding.ensureInitialized();
