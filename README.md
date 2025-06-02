@@ -8,6 +8,22 @@ A new Flutter project.
 
 ## Getting Started
 
+### ⚙️ iOS Release Build Fix: Strip Style (TFLite / ONNXRuntime)
+
+> ❗️When building IPA release, the app might crash with `Failed to lookup symbol` or `Symbol not found: _OrtGetApiBase` due to Xcode stripping native C symbols.
+
+🔧 **How to fix:**
+
+1. Open Xcode
+2. Select the `Runner` target
+3. Go to `Build Settings`
+4. Search for `Strip Style`
+5. 👉 Change from `All Symbols` to `Non-Global Symbols`
+
+> ✅ This keeps required global C symbols used by libraries like TFLite or ONNXRuntime (which rely on `dlsym()`).
+
+📌 Apply this to both `Release` and `Profile` configurations.
+
 This project is a starting point for a Flutter application.
 
 A few resources to get you started if this is your first Flutter project:
