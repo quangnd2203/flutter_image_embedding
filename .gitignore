@@ -49,3 +49,6 @@ app.*.map.json
 
 *.lock
 *.g.*
+
+# FVM Version Cache
+.fvm/

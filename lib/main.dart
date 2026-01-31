@@ -57,22 +57,30 @@ class _MyHomePageState extends State<MyHomePage> {
 
   ClipModelInterface model = ClipImageVisualModel();
 
-  final StreamController<int> processImagesController = StreamController<int>.broadcast();
+  final StreamController<int> processImagesController =
+      StreamController<int>.broadcast();
 
   Box<VectorImage>? box;
 
   Future<void> _pickImage() async {
+    setState(() {
+      _isLoading = true;
+    });
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       final imageFile = File(pickedFile.path);
-      final jpgBytes = await compute(convertImageFileToJpgBytes, (imageFile, true));
+      final jpgBytes =
+          await compute(convertImageFileToJpgBytes, (imageFile, true));
       final vector = await model.extractImageEmbedding([jpgBytes]);
       setState(() {
         _selectedImage = jpgBytes;
         _selectedVector = vector[0];
       });
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<void> _preVectorImages() async {
@@ -97,18 +105,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
     final List<AssetEntity> assets = await PhotoManager.getAssetListRange(
       start: 0,
-      end: 100,
+      end: 30,
       type: RequestType.image,
     );
 
     const batchSize = 5;
     for (int i = 0; i < assets.length; i += batchSize) {
-      final batch = assets.sublist(i, (i + batchSize > assets.length) ? assets.length : i + batchSize);
+      final batch = assets.sublist(
+          i, (i + batchSize > assets.length) ? assets.length : i + batchSize);
 
       final preProcessImages = await Future.wait(
         batch.map((file) async {
           final originalFile = await file.file;
-          final jpgBytes = await compute(convertImageFileToJpgBytes, (originalFile!, false));
+          final jpgBytes =
+              await compute(convertImageFileToJpgBytes, (originalFile!, false));
           return jpgBytes;
         }),
       );
@@ -124,7 +134,8 @@ class _MyHomePageState extends State<MyHomePage> {
         vectorImages[path] = vectorImage;
         box?.put(path, vectorImage);
         final currentIndex = i + j + 1;
-        final progressPercent = (currentIndex / assets.length * 100).clamp(0, 100).round();
+        final progressPercent =
+            (currentIndex / assets.length * 100).clamp(0, 100).round();
         processImagesController.add(progressPercent);
       }
       preProcessImages.clear();
@@ -203,7 +214,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           final vb = vectorImages[b]!.vector;
                           final sa = cosineSimilarity(_selectedVector!, va);
                           final sb = cosineSimilarity(_selectedVector!, vb);
-                          return sb.compareTo(sa); // Higher similarity = comes first
+                          return sb
+                              .compareTo(sa); // Higher similarity = comes first
                         },
                 ),
               ),
@@ -222,7 +234,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         const CircularProgressIndicator(),
                         const SizedBox(height: 16),
-                        Text('$percent%', style: const TextStyle(color: Colors.white, fontSize: 20)),
+                        Text('$percent%',
+                            style: const TextStyle(
+                                color: Colors.white, fontSize: 20)),
                       ],
                     );
                   },
@@ -236,14 +250,19 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           FloatingActionButton(
             onPressed: _pickImage,
-            tooltip: 'Upload',
+            tooltip: 'Select image to search',
             child: const Icon(Icons.upload_file),
           ),
           const SizedBox(width: 16),
-          FloatingActionButton(
+          FloatingActionButton.extended(
             onPressed: _preVectorImages,
-            tooltip: vectorImages.isEmpty ? 'Init' : 'Refresh',
-            child: Icon(vectorImages.isEmpty ? Icons.play_arrow : Icons.refresh),
+            tooltip: vectorImages.isEmpty
+                ? 'Scan gallery and vectorize images'
+                : 'Rescan gallery and vectorize images',
+            icon:
+                Icon(vectorImages.isEmpty ? Icons.image_search : Icons.refresh),
+            label:
+                Text(vectorImages.isEmpty ? "Scan gallery" : "Rescan gallery"),
           ),
         ],
       ),

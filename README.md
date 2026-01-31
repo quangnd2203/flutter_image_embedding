@@ -3,7 +3,7 @@
 `flutter_image_embedding` is a Flutter plugin that provides on-device image and text embedding functionality using ONNX models, such as OpenAI's CLIP. This allows developers to extract image and text features and perform similarity matching directly in their Flutter apps.
 
 <p align="center">
-  <img src="assets/gif/demo.gif" width="600" alt="App demo"/>
+  <img src="assets/gif/image_embbeding_demo.gif" width="600" alt="App demo"/>
 </p>
 
 ## Features
