@@ -148,11 +148,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    super.initState();
     model.loadModel();
     box = Hive.box<VectorImage>(HiveAdapters.vectorImageBox);
     vectorImages = box!.toMap().cast<String, VectorImage>();
     box = null;
-    super.initState();
+    _requestPermission();
+  }
+
+  Future<void> _requestPermission() async {
+    await PhotoManager.requestPermissionExtend();
   }
 
   @override

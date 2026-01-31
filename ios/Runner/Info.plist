@@ -27,7 +27,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Chúng tôi cần truy cập thư viện ảnh của bạn để hiển thị và tìm kiếm hình ảnh.</string>
+	<string>This app requires access to your photo library to analyze and search for similar images.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
